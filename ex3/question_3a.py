@@ -52,7 +52,7 @@ def main(argv):
     
     file_handler = open('question3Aontology.txt', 'a+')
     doc = get_url_doc(base_url)
-    league = doc.xpath("//table[contains(@class, 'infobox')]/caption/a/@title")[0].encode('utf-8').replace(' ', '_')
+    league = doc.xpath("//table[contains(@class, 'infobox')]/caption/a/@title")[0].encode('ascii').replace(' ', '_')
     country = "England"
     file_handler.write("<http://example.org/" + league +"> <http://example.org/country> <http://example.org/" + country + "> .\n")
 

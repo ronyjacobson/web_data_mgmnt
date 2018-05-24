@@ -25,6 +25,9 @@ ENTITY = 'entity'
 ONTOLOGY_FILE = 'ontology.nt'
 QUERY_FILE = 'query.sparql'
 
+TH_XPATH = "//table[contains(@class,'infobox')]//tr[{}]/th//text()"
+TD_XPATH = "//table[contains(@class,'infobox')]//tr[{}]/td//text()"
+
 
 def print_debug(string):
     if DEBUG:
@@ -32,35 +35,41 @@ def print_debug(string):
 
 
 def get_entity_and_relation(matchObj):
-    return {ENTITY: matchObj.group(2).replace(" ", "_"),
-            RELATION: matchObj.group(1).replace(" ", "_")}
+    return {ENTITY: matchObj.group(2),
+            RELATION: matchObj.group(1)}
 
 
 def process_input(argv):
+    query = ""
+
     if DEBUG:
-        query = "When was rony jacobson born?"
+        query = "When was Gal Gadot Born?"
     if len(argv) == 2:
         query = argv[1]
 
+    if query == "":
+        print("Error: There was no given query.")
+        raise IOError
+
     print_debug("Query is: " + query)
     # Extract relation and entity
-    matchObj = re.match(r'Who is the (\w+(?:\s\w+)*) of (?:the )?(\w+(?:\s\w+)*)\?', query, re.I)
+    matchObj = re.match(r'Who is the (\w+(?:\s\w+)*) of (?:the )?(\w+(?:\s\w+)*)\?', query)
     if matchObj:
         if matchObj.group() == query:
             return get_entity_and_relation(matchObj)
 
-    matchObj = re.match(r'What is the (\w+(?:\s\w+)*) of (?:the )?(\w+(?:\s\w+)*)\?', query, re.I)
+    matchObj = re.match(r'What is the (\w+(?:\s\w+)*) of (?:the )?(\w+(?:\s\w+)*)\?', query)
     if matchObj:
         if matchObj.group() == query:
             return get_entity_and_relation(matchObj)
 
-    matchObj = re.match(r'When was (\w+(?:\s\w+)*) born\?', query, re.I)
+    matchObj = re.match(r'When was (\w+(?:\s\w+)*) Born\?', query)
     if matchObj:
         if matchObj.group() == query:
-            return {ENTITY: matchObj.group(1).replace(" ", "_"), RELATION: 'born'}
+            return {ENTITY: matchObj.group(1), RELATION: 'Born'}
 
     # No Match
-    print("Could not parse input query: {}".format(query))
+    print("Error: Could not parse input query: [{}]".format(query))
     raise Exception
 
 
@@ -68,23 +77,29 @@ def get_wikilink(entity):
     return "https://en.wikipedia.org/wiki/" + entity
 
 
-def get_infobox_relations(wikilink):
+def get_infobox_relations(wikilink, requested_relation):
     relations = []
-    requested_relation = "banana"
+    answer = ""
+    created_relation = ""
     # TODO - extract relation using xpath and generate a list of relation-value tuples
-    '''
     req = requests.get(wikilink)
     doc = lxml.html.fromstring(req.content)
     infobox_rows = doc.xpath("//table[contains(@class,'infobox')]//tr")
-    for row in infobox_rows:
-        print(etree.tostring(row, pretty_print=True))
-        relation = row.xpath("/tr/th/text()")
-        value = row.xpath("/tr/td/text()")
-        if relation and value:
-            relations.append((relation, value))
-    print(relations)
-    '''
-    return requested_relation, relations
+    for i in range(0, len(infobox_rows)):
+        relation = ''.join(doc.xpath(TH_XPATH.format(i))).replace('\n', ' ').strip().encode('utf-8')
+        value = ''.join(doc.xpath(TD_XPATH.format(i))).replace('\n', ' ').strip().encode('utf-8')
+        if relation!='' and value!='':
+            print_debug(str(relation))
+            print_debug(str(value))
+
+            if relation.lower() == requested_relation.lower():
+                answer = value
+                created_relation = relation
+            relations.append([relation, value])
+    print_debug("relations:")
+    print_debug(relations)
+
+    return answer, created_relation, relations
 
 
 def build_ontology(entity, relations):
@@ -105,7 +120,9 @@ def build_ontology(entity, relations):
 
 
 def translate_query_to_sparql(relation, entity):
-    query = "select ?value where { <http://example.org/" + entity + "> <http://example.org/" + relation + "> ?value}"
+    query = "select ?value where { <http://example.org/" + entity.replace(' ',
+                                                                          '_') + "> <http://example.org/" + relation.replace(
+        ' ', '_') + "> ?value}"
     file_handler = open(QUERY_FILE, 'w')
     file_handler.write(query)
     file_handler.flush()
@@ -127,10 +144,10 @@ def main(argv):
     input = process_input(argv)
     print_debug("Parsed input is: " + input.__str__())
     wikilink = get_wikilink(input[ENTITY])
-    requested_relation, relations = get_infobox_relations(wikilink)
+    requested_relation, created_relation, relations = get_infobox_relations(wikilink, input[RELATION])
     print ("Answer is: " + requested_relation)
     build_ontology(input[ENTITY], relations)
-    translate_query_to_sparql(input[RELATION], input[ENTITY])
+    translate_query_to_sparql(created_relation, input[ENTITY])
     if DEBUG:
         run_query_on_ontology()
     return 0
