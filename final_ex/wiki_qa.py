@@ -8,9 +8,6 @@ import rdflib
 
 DEBUG = True
 
-RELATION = 'relation'
-ENTITY = 'entity'
-
 test_relations = [
     ('parent', 'orit'),
     ('parent', 'meir'),
@@ -22,34 +19,40 @@ test_relations = [
     ('born', 'July 8 1989'),
     ('eat', 'banana')]
 
+# Consts
+RELATION = 'relation'
+ENTITY = 'entity'
+ONTOLOGY_FILE = 'ontology.nt'
+QUERY_FILE = 'query.sparql'
 
-def PrintDebug(string):
+
+def print_debug(string):
     if DEBUG:
         print(string)
 
 
-def GetEntityAndRelation(matchObj):
+def get_entity_and_relation(matchObj):
     return {ENTITY: matchObj.group(2).replace(" ", "_"),
             RELATION: matchObj.group(1).replace(" ", "_")}
 
 
-def ProcessInput(argv):
+def process_input(argv):
     if DEBUG:
         query = "When was rony jacobson born?"
     if len(argv) == 2:
         query = argv[1]
 
-    PrintDebug("Query is: " + query)
+    print_debug("Query is: " + query)
     # Extract relation and entity
     matchObj = re.match(r'Who is the (\w+(?:\s\w+)*) of (?:the )?(\w+(?:\s\w+)*)\?', query, re.I)
     if matchObj:
         if matchObj.group() == query:
-            return GetEntityAndRelation(matchObj)
+            return get_entity_and_relation(matchObj)
 
     matchObj = re.match(r'What is the (\w+(?:\s\w+)*) of (?:the )?(\w+(?:\s\w+)*)\?', query, re.I)
     if matchObj:
         if matchObj.group() == query:
-            return GetEntityAndRelation(matchObj)
+            return get_entity_and_relation(matchObj)
 
     matchObj = re.match(r'When was (\w+(?:\s\w+)*) born\?', query, re.I)
     if matchObj:
@@ -61,14 +64,14 @@ def ProcessInput(argv):
     raise Exception
 
 
-def GetWikiLink(entity):
+def get_wikilink(entity):
     return "https://en.wikipedia.org/wiki/" + entity
 
 
-def GetInfoboxRelations(wikilink):
+def get_infobox_relations(wikilink):
     relations = []
     requested_relation = "banana"
-    # TODO
+    # TODO - extract relation using xpath and generate a list of relation-value tuples
     '''
     req = requests.get(wikilink)
     doc = lxml.html.fromstring(req.content)
@@ -84,7 +87,7 @@ def GetInfoboxRelations(wikilink):
     return requested_relation, relations
 
 
-def BuildOntology(entity, relations):
+def build_ontology(entity, relations):
     if DEBUG:
         relations = test_relations
 
@@ -96,24 +99,24 @@ def BuildOntology(entity, relations):
         value_ref = rdflib.URIRef("http://example.org/" + value.replace(" ", "_"))
         g.add((entity_ref, relation_ref, value_ref))
 
-    g.serialize("ontology.nt", format="nt")
+    g.serialize(ONTOLOGY_FILE, format="nt")
     sorted(g)
     return g
 
 
-def TranslateQueryToSparql(relation, entity):
+def translate_query_to_sparql(relation, entity):
     query = "select ?value where { <http://example.org/" + entity + "> <http://example.org/" + relation + "> ?value}"
-    file_handler = open('query.sparql', 'w')
+    file_handler = open(QUERY_FILE, 'w')
     file_handler.write(query)
     file_handler.flush()
     file_handler.close()
     return query
 
 
-def RunQueryOnOntology():
-    query = open('query.sparql', 'r').readline()
+def run_query_on_ontology():
+    query = open(QUERY_FILE, 'r').readline()
     graph = rdflib.Graph()
-    file = open("ontology.nt", 'r')
+    file = open(ONTOLOGY_FILE, 'r')
     graph.parse(file, format='nt')
     result = graph.query(query)
     print(list(result))
@@ -121,15 +124,15 @@ def RunQueryOnOntology():
 
 
 def main(argv):
-    input = ProcessInput(argv)
-    PrintDebug("Parsed input is: " + input.__str__())
-    wikilink = GetWikiLink(input[ENTITY])
-    requested_relation, relations = GetInfoboxRelations(wikilink)
+    input = process_input(argv)
+    print_debug("Parsed input is: " + input.__str__())
+    wikilink = get_wikilink(input[ENTITY])
+    requested_relation, relations = get_infobox_relations(wikilink)
     print ("Answer is: " + requested_relation)
-    BuildOntology(input[ENTITY], relations)
-    TranslateQueryToSparql(input[RELATION], input[ENTITY])
+    build_ontology(input[ENTITY], relations)
+    translate_query_to_sparql(input[RELATION], input[ENTITY])
     if DEBUG:
-        RunQueryOnOntology()
+        run_query_on_ontology()
     return 0
 
 

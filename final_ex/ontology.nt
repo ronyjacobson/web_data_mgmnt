@@ -1,10 +1,10 @@
-<http://example.org/rony_jacobson> <http://example.org/dog> <http://example.org/Jullie> .
-<http://example.org/rony_jacobson> <http://example.org/parent> <http://example.org/meir> .
 <http://example.org/rony_jacobson> <http://example.org/parent> <http://example.org/orit> .
-<http://example.org/rony_jacobson> <http://example.org/dougther> <http://example.org/Shirt> .
-<http://example.org/rony_jacobson> <http://example.org/born> <http://example.org/July_8_1989> .
+<http://example.org/rony_jacobson> <http://example.org/spouse> <http://example.org/Oron> .
 <http://example.org/rony_jacobson> <http://example.org/eat> <http://example.org/banana> .
 <http://example.org/rony_jacobson> <http://example.org/school> <http://example.org/Nitzanim> .
-<http://example.org/rony_jacobson> <http://example.org/spouse> <http://example.org/Oron> .
 <http://example.org/rony_jacobson> <http://example.org/school> <http://example.org/Ohel_Shem> .
+<http://example.org/rony_jacobson> <http://example.org/born> <http://example.org/July_8_1989> .
+<http://example.org/rony_jacobson> <http://example.org/dog> <http://example.org/Jullie> .
+<http://example.org/rony_jacobson> <http://example.org/parent> <http://example.org/meir> .
+<http://example.org/rony_jacobson> <http://example.org/dougther> <http://example.org/Shirt> .
 
