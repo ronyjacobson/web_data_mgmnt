@@ -105,12 +105,17 @@ def TranslateQueryToSparql(relation, entity):
     query = "select ?value where { <http://example.org/" + entity + "> <http://example.org/" + relation + "> ?value}"
     file_handler = open('query.sparql', 'w')
     file_handler.write(query)
+    file_handler.flush()
     file_handler.close()
     return query
 
 
-def RunQueryOnOntology(query, ontology):
-    result = ontology.query(query)
+def RunQueryOnOntology():
+    query = open('query.sparql', 'r').readline()
+    graph = rdflib.Graph()
+    file = open("ontology.nt", 'r')
+    graph.parse(file, format='nt')
+    result = graph.query(query)
     print(list(result))
     return
 
@@ -121,9 +126,10 @@ def main(argv):
     wikilink = GetWikiLink(input[ENTITY])
     requested_relation, relations = GetInfoboxRelations(wikilink)
     print ("Answer is: " + requested_relation)
-    ontology = BuildOntology(input[ENTITY], relations)
-    query = TranslateQueryToSparql(input[RELATION], input[ENTITY])
-    RunQueryOnOntology(query, ontology)
+    BuildOntology(input[ENTITY], relations)
+    TranslateQueryToSparql(input[RELATION], input[ENTITY])
+    if DEBUG:
+        RunQueryOnOntology()
     return 0
 
 
