@@ -26,8 +26,8 @@ ENTITY = 'entity'
 ONTOLOGY_FILE = 'ontology.nt'
 QUERY_FILE = 'query.sparql'
 
-TH_XPATH = "//table[contains(@class,'infobox')]//tr[{}]/th//text()"
-TD_XPATH = "//table[contains(@class,'infobox')]//tr[{}]/td//text()"
+TH_XPATH = "//table[contains(@class,'infobox')]/tr[{}]/th//text()"
+TD_XPATH = "//table[contains(@class,'infobox')]/tr[{}]/td//text()"
 
 queries = [
     "Who is the president of Italy?",
@@ -78,7 +78,7 @@ def get_wikilink(entity):
 
 
 def get_infobox_relations(wikilink):
-    ''' The function recivies a wikilink, fetches it's contents and extracts all relations in the infobox'''
+    ''' The function receives a wikilink, fetches it's contents and extracts all relations in the infobox'''
     relations = []
 
     req = requests.get(wikilink)
