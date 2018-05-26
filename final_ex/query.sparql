@@ -1,1 +1,1 @@
-select ?value where { <http://example.org/Theodor_Herzl> <http://example.org/Born> ?value}
+select ?value where { <http://example.org/Barack_Obama> <http://example.org/Parents> ?value}

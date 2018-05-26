@@ -7,7 +7,7 @@ import sys
 import rdflib
 import distance
 
-DEBUG = True
+DEBUG = False
 
 test_relations = [
     ('parent', 'orit'),
