@@ -10,17 +10,6 @@ from collections import defaultdict
 
 DEBUG = True
 
-test_relations = [
-    ('parent', 'orit'),
-    ('parent', 'meir'),
-    ('dog', 'Jullie'),
-    ('dougther', 'Shirt'),
-    ('spouse', 'Oron'),
-    ('school', 'Nitzanim'),
-    ('school', 'Ohel Shem'),
-    ('Born', 'July 8 1989'),
-    ('eat', 'banana')]
-
 # Consts
 RELATION = 'relation'
 ENTITY = 'entity'
@@ -91,6 +80,7 @@ def get_infobox_relations(wikilink):
     for i in range(1, len(infobox_rows)+1):
         relation = ''.join(doc.xpath(TH_XPATH.format(i))).replace('\n', ' ').strip().encode('utf-8')
 
+        # Check if there are multiple values (a list)
         values = doc.xpath("//table[position()=1 and contains(@class,'infobox')]/tr[{}]/td//li".format(i))
         if len(values) == 0:
             value = ''.join(doc.xpath(TD_XPATH.format(i))).replace('\n', ' ').strip().encode('utf-8')
@@ -102,10 +92,10 @@ def get_infobox_relations(wikilink):
                 if relation != '' and value != '':
                     relations[relation].append(value)
 
-    # if DEBUG:
-    #     print("relations:")
-    #     for relation in relations:
-    #         print "{} : {}".format(relation, relations[relation])
+    if DEBUG:
+        print("relations:")
+        for relation in relations:
+            print "{} : {}".format(relation, relations[relation])
 
     return relations
 
@@ -118,7 +108,7 @@ def extract_query_answer(relations, query_relation):
     relation_name = ""
 
     for relation in relations.keys():
-        relation_word_distance = distance.jaccard(relation.lower(), query_relation.lower())
+        relation_word_distance = distance.levenshtein(relation.lower(), query_relation.lower())
         if relation_word_distance < min_word_distance:
             requested_relation_answers = relations[relation]
             relation_name = relation
@@ -127,9 +117,6 @@ def extract_query_answer(relations, query_relation):
 
 
 def build_ontology(entity, relations):
-    if DEBUG:
-        relations = relations  # test_relations
-
     g = rdflib.Graph()
     entity_ref = rdflib.URIRef("http://example.org/" + entity.replace(" ", "_"))
 
@@ -189,7 +176,7 @@ def main(argv):
     if len(argv) == 2:
         query = argv[1]
     if query == "":
-        print "Error: There was no given query."
+        print("Error: There was no given query.")
         return 1
 
     return wiki_qa_main(query)
