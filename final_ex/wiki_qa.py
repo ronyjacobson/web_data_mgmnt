@@ -8,7 +8,7 @@ import rdflib
 import distance
 from collections import defaultdict
 
-DEBUG = True
+DEBUG = False
 
 # Consts
 RELATION = 'relation'
@@ -58,8 +58,7 @@ def process_input(query):
             return {ENTITY: matchObj.group(1).strip(), RELATION: 'Born'}
 
     # No Match
-    print("Error: Could not parse input query: [{}]".format(query))
-    raise Exception
+    raise Exception("Error: Could not parse input query: [{}]".format(query))
 
 
 def get_wikilink(entity):
@@ -77,6 +76,7 @@ def get_infobox_relations(wikilink):
     req = requests.get(wikilink)
     doc = lxml.html.fromstring(req.content)
     infobox_rows = doc.xpath("//table[contains(@class,'infobox')]/tr")
+
     for i in range(1, len(infobox_rows)+1):
         relation = ''.join(doc.xpath(TH_XPATH.format(i))).replace('\n', ' ').strip().encode('utf-8')
 
@@ -96,6 +96,9 @@ def get_infobox_relations(wikilink):
         print("relations:")
         for relation in relations:
             print "{} : {}".format(relation, relations[relation])
+
+    if len(relations) == 0:
+        raise Exception("Error: Could not find relations for wikilink: [{}]".format(wikilink))
 
     return relations
 
@@ -179,7 +182,11 @@ def main(argv):
         print("Error: There was no given query.")
         return 1
 
-    return wiki_qa_main(query)
+    try:
+        wiki_qa_main(query)
+    except Exception as error:
+        print(error)
+
 
 
 if __name__ == "__main__":
