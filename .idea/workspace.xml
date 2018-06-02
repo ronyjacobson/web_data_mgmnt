@@ -26,8 +26,8 @@
       <file leaf-file-name="wiki_qa.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/final_ex/wiki_qa.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="168">
-              <caret line="89" column="100" lean-forward="false" selection-start-line="89" selection-start-column="100" selection-end-line="89" selection-end-column="100" />
+            <state relative-caret-position="-123">
+              <caret line="173" column="42" lean-forward="false" selection-start-line="173" selection-start-column="27" selection-end-line="173" selection-end-column="42" />
               <folding>
                 <element signature="e#18#27#0" expanded="true" />
               </folding>
@@ -68,7 +68,7 @@
       <file leaf-file-name="ontology.nt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/final_ex/ontology.nt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
+            <state relative-caret-position="-86">
               <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -88,7 +88,7 @@
       <file leaf-file-name="question_3a.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ex3/question_3a.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
+            <state relative-caret-position="59">
               <caret line="62" column="9" lean-forward="false" selection-start-line="62" selection-start-column="4" selection-end-line="62" selection-end-column="9" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
@@ -111,14 +111,12 @@
       <find>rdflib</find>
       <find>ontolo</find>
       <find>query.s</find>
-      <find>league</find>
       <find>alma ma</find>
       <find>translate_query_to_sparql</find>
       <find>get_wikilink</find>
       <find>input</find>
       <find>test_relations</find>
       <find>print_debug</find>
-      <find>?</find>
       <find>get_infobox_relations</find>
       <find>process_input</find>
       <find>queries</find>
@@ -127,7 +125,11 @@
       <find>example</find>
       <find>run_query_on_ontology</find>
       <find>answe</find>
+      <find>league</find>
+      <find>?</find>
+      <find>td</find>
       <find>presiden</find>
+      <find>extract_query_answer</find>
     </findStrings>
     <replaceStrings>
       <replace>(%1, %2),</replace>
@@ -512,7 +514,7 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295838" sideWeight="0.4918033" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.48451152" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.46306592" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3877841" sideWeight="0.4217633" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3877841" sideWeight="0.4217633" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.47498015" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -719,16 +721,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ex3/question_3a.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="62" column="9" lean-forward="false" selection-start-line="62" selection-start-column="4" selection-end-line="62" selection-end-column="9" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/pyparsing.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="160">
@@ -753,14 +745,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ex3/question3Aontology.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1954">
-          <caret line="840" column="86" lean-forward="false" selection-start-line="840" selection-start-column="86" selection-end-line="840" selection-end-column="95" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/final_ex/query.sparql">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -769,9 +753,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ex3/question_3a.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="59">
+          <caret line="62" column="9" lean-forward="false" selection-start-line="62" selection-start-column="4" selection-end-line="62" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ex3/question3Aontology.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1954">
+          <caret line="840" column="86" lean-forward="false" selection-start-line="840" selection-start-column="86" selection-end-line="840" selection-end-column="95" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/final_ex/ontology.nt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
+        <state relative-caret-position="-86">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
@@ -779,8 +781,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/final_ex/wiki_qa.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="89" column="100" lean-forward="false" selection-start-line="89" selection-start-column="100" selection-end-line="89" selection-end-column="100" />
+        <state relative-caret-position="-123">
+          <caret line="173" column="42" lean-forward="false" selection-start-line="173" selection-start-column="27" selection-end-line="173" selection-end-column="42" />
           <folding>
             <element signature="e#18#27#0" expanded="true" />
           </folding>
