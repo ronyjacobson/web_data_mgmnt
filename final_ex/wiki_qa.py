@@ -7,7 +7,7 @@ import sys
 import rdflib
 import distance
 
-DEBUG = False
+DEBUG = True
 
 test_relations = [
     ('parent', 'orit'),
@@ -26,8 +26,6 @@ ENTITY = 'entity'
 ONTOLOGY_FILE = 'ontology.nt'
 QUERY_FILE = 'query.sparql'
 
-TH_XPATH = "//table[contains(@class,'infobox')]/tr[{}]/th//text()"
-TD_XPATH = "//table[contains(@class,'infobox')]/tr[{}]/td//text()"
 
 queries = [
     "Who is the president of Italy?",
@@ -36,7 +34,8 @@ queries = [
     "Who is the MVP of the 2011 NBA Finals?",
     "What is the best picture of the 90th Academy Awards?",
     "What is the capital of Canada?",
-    "When was Theodor Herzl born?"
+    "When was Theodor Herzl born?",
+    "Who is the parent of Barack Obama?"
 ]
 
 def print_debug(string):
@@ -80,6 +79,9 @@ def get_wikilink(entity):
 def get_infobox_relations(wikilink):
     ''' The function receives a wikilink, fetches it's contents and extracts all relations in the infobox'''
     relations = []
+
+    TH_XPATH = "//table[contains(@class,'infobox')]/tr[{}]/th//text()"
+    TD_XPATH = "//table[contains(@class,'infobox')]/tr[{}]/td//text()"
 
     req = requests.get(wikilink)
     doc = lxml.html.fromstring(req.content)
