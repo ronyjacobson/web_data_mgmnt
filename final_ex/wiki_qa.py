@@ -9,7 +9,7 @@ import distance
 from collections import defaultdict
 
 DEBUG = False
-DEBUG_QUERIES = True
+DEBUG_QUERIES = False
 
 # Consts
 RELATION = 'relation'
