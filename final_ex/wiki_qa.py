@@ -9,7 +9,7 @@ from collections import defaultdict
 import numpy as np
 
 DEBUG = False
-DEBUG_QUERIES = True
+DEBUG_QUERIES = False
 
 # Consts
 RELATION = 'relation'
@@ -70,7 +70,7 @@ def get_wikilink(entity):
 def parse_info(relation, values):
     parsed_values = []
 
-    parsed_relation = re.sub(r"[^\w\s]", "", relation)
+    parsed_relation = re.sub(r"[^\w\s]", "", relation).strip()
 
     for value in values:
         parsed_value = value
@@ -111,7 +111,8 @@ def get_infobox_relations(wikilink):
                     extracted_values.append(value)
 
         parsed_relation, extracted_values = parse_info(relation, extracted_values)
-        relations[parsed_relation] = extracted_values
+        if parsed_relation != "":
+            relations[parsed_relation] = extracted_values
 
 
     if DEBUG:
@@ -159,6 +160,9 @@ def extract_query_answer(relations, query_relation):
     relation_name = ""
 
     for relation in relations.keys():
+
+        print_debug("relation:" + relation)
+        print_debug("query_relation:" + query_relation)
         # Compare only alpha numeric characters
         clean_relation = re.sub(r'[^a-zA-Z123456789\s]', "", relation.lower())
         clean_query_relation = re.sub(r'[^a-zA-Z123456789\s]', "", query_relation.lower())
@@ -173,11 +177,13 @@ def extract_query_answer(relations, query_relation):
             if ('largest city' in clean_relation):
                 relation_word_distance = 0
 
-        # print "distance {}<-->{} is {}".format(clean_query_relation, clean_relation, relation_word_distance)
+        print_debug("distance {}<-->{} is {}".format(query_relation, relation, relation_word_distance))
         if relation_word_distance < min_word_distance:
             requested_relation_answers = relations[relation]
             relation_name = relation
             min_word_distance = relation_word_distance
+
+
     return requested_relation_answers, relation_name
 
 
