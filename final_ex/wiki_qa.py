@@ -5,11 +5,11 @@ import lxml.html
 from lxml import etree
 import sys
 import rdflib
-import distance
 from collections import defaultdict
+import numpy as np
 
 DEBUG = False
-DEBUG_QUERIES = False
+DEBUG_QUERIES = True
 
 # Consts
 RELATION = 'relation'
@@ -65,32 +65,43 @@ def process_input(query):
 def get_wikilink(entity):
     return "https://en.wikipedia.org/wiki/" + entity
 
+def parse_info(relation, values):
+    parsed_relation = relation.replace('[^a-zA-Z0-9\(\)]', '')
+    parsed_values = []
+    for value in values:
+        parsed_value = value
+        if relation.lower() != "Time zone".lower():
+            # Remove ()
+            parsed_value = re.sub(r"\(.*\)", "", value)
+        # Remove []
+        parsed_value = re.sub(r"\[.*\]", "", parsed_value)
+        parsed_values.append(parsed_value)
+
+    return parsed_relation, parsed_values
 
 def get_infobox_relations(wikilink):
     ''' The function receives a wikilink, fetches it's contents and extracts all relations in the infobox'''
     relations = defaultdict(list)
 
-    TH_XPATH = "//table[position()=1 and contains(@class,'infobox')]/tr[{}]/th//text()"
-    TD_LI_XPATH = "//table[position()=1 and contains(@class,'infobox')]/tr[{}]/td//li[{}]//text()"
-    TD_XPATH = "//table[position()=1 and contains(@class,'infobox')]/tr[{}]/td//text()"
-
     req = requests.get(wikilink)
     doc = lxml.html.fromstring(req.content)
     infobox_rows = doc.xpath("//table[contains(@class,'infobox')]/tr")
 
-    for i in range(1, len(infobox_rows)+1):
-        relation = ''.join(doc.xpath(TH_XPATH.format(i))).replace('\n', ' ').strip().encode('utf-8')
+    for row in infobox_rows:
+        relation = ''.join(row.xpath("./th//text()")).replace('\n', ' ').strip().encode('utf-8')
+
         # Check if there are multiple values (a list)
-        values = doc.xpath("//table[position()=1 and contains(@class,'infobox')]/tr[{}]/td//li".format(i))
+        values = row.xpath("./td//li")
         if len(values) == 0:
-            value = ''.join(doc.xpath(TD_XPATH.format(i))).replace('\n', ' ').strip().encode('utf-8')
+            value = ''.join(row.xpath("./td//text()")).replace('\n', ' ').strip().encode('utf-8')
+
             if relation != '' and value != '':
                 relations[relation].append(value)
         else:
-            for j in range(1, len(values)+1):
-                value = ''.join(doc.xpath(TD_LI_XPATH.format(i,j))).replace('\n', ' ').strip().encode('utf-8')
-                if relation != '' and value != '':
-                    relations[relation].append(value)
+            for value in values:
+                content = ''.join(value.xpath(".//text()")).replace('\n', ' ').strip().encode('utf-8')
+                if relation != '' and content != '':
+                    relations[relation].append(content)
 
     if DEBUG:
         print("relations:")
@@ -104,6 +115,31 @@ def get_infobox_relations(wikilink):
     return relations
 
 
+def levenshtein_distance(seq1, seq2):
+    size_x = len(seq1) + 1
+    size_y = len(seq2) + 1
+    matrix = np.zeros ((size_x, size_y))
+    for x in xrange(size_x):
+        matrix [x, 0] = x
+    for y in xrange(size_y):
+        matrix [0, y] = y
+
+    for x in xrange(1, size_x):
+        for y in xrange(1, size_y):
+            if seq1[x-1] == seq2[y-1]:
+                matrix [x,y] = min(
+                    matrix[x-1, y] + 1,
+                    matrix[x-1, y-1],
+                    matrix[x, y-1] + 1
+                )
+            else:
+                matrix [x,y] = min(
+                    matrix[x-1,y] + 1,
+                    matrix[x-1,y-1] + 1,
+                    matrix[x,y-1] + 1
+                )
+    return (matrix[size_x - 1, size_y - 1])
+
 def extract_query_answer(relations, query_relation):
     ''' Take the closest relation to the one asked in the query using Jaccard word distance and return it's value and
     it's name as it will be in in the ontology. '''
@@ -116,7 +152,7 @@ def extract_query_answer(relations, query_relation):
         clean_relation = re.sub(r'[^a-zA-Z123456789\s]', "", relation.lower())
         clean_query_relation = re.sub(r'[^a-zA-Z123456789\s]', "", query_relation.lower())
 
-        relation_word_distance = distance.levenshtein(clean_relation, clean_query_relation)
+        relation_word_distance = levenshtein_distance(clean_relation, clean_query_relation)
         # print "distance {}<-->{} is {}".format(clean_query_relation, clean_relation, relation_word_distance)
         if relation_word_distance < min_word_distance:
             requested_relation_answers = relations[relation]
@@ -187,11 +223,11 @@ def main(argv):
     if query == "":
         print("Error: There was no given query.")
         return 1
-
-    try:
-        wiki_qa_main(query)
-    except Exception as error:
-        print(error)
+    wiki_qa_main(query)
+    # try:
+    #     wiki_qa_main(query)
+    # except Exception as error:
+    #     print(error)
 
 
 
