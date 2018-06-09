@@ -25,6 +25,8 @@ debug_queries = [
     "Who is the MVP of the 2011 NBA Finals?",
     "What is the best picture of the 90th Academy Awards?",
     "What is the capital of Canada?",
+    "What is the capital of Argentina?",
+    "What is the Largest city of Italy?",
     "When was Theodor Herzl born?",
     "Who is the parent of Barack Obama?"
 ]
@@ -66,15 +68,19 @@ def get_wikilink(entity):
     return "https://en.wikipedia.org/wiki/" + entity
 
 def parse_info(relation, values):
-    parsed_relation = relation.replace('[^a-zA-Z0-9\(\)]', '')
     parsed_values = []
+
+    parsed_relation = re.sub(r"[^\w\s]", "", relation)
+
     for value in values:
         parsed_value = value
+        if "capital" in relation.lower():
+            parsed_value = re.sub(r" \d.*", "", parsed_value)
         if relation.lower() != "Time zone".lower():
             # Remove ()
-            parsed_value = re.sub(r"\(.*\)", "", value)
+            parsed_value = re.sub(r"\(.*\)", "", parsed_value)
         # Remove []
-        parsed_value = re.sub(r"\[.*\]", "", parsed_value)
+        parsed_value = re.sub(r"\[.*\]", "", parsed_value).strip()
         parsed_values.append(parsed_value)
 
     return parsed_relation, parsed_values
@@ -85,9 +91,10 @@ def get_infobox_relations(wikilink):
 
     req = requests.get(wikilink)
     doc = lxml.html.fromstring(req.content)
-    infobox_rows = doc.xpath("//table[contains(@class,'infobox')]/tr")
+    infobox_rows = doc.xpath("//table[contains(@class,'infobox') and position()=1]/tr")
 
     for row in infobox_rows:
+        extracted_values = []
         relation = ''.join(row.xpath("./th//text()")).replace('\n', ' ').strip().encode('utf-8')
 
         # Check if there are multiple values (a list)
@@ -96,12 +103,16 @@ def get_infobox_relations(wikilink):
             value = ''.join(row.xpath("./td//text()")).replace('\n', ' ').strip().encode('utf-8')
 
             if relation != '' and value != '':
-                relations[relation].append(value)
+                extracted_values.append(value)
         else:
-            for value in values:
-                content = ''.join(value.xpath(".//text()")).replace('\n', ' ').strip().encode('utf-8')
-                if relation != '' and content != '':
-                    relations[relation].append(content)
+            for xml_value in values:
+                value = ''.join(xml_value.xpath(".//text()")).replace('\n', ' ').strip().encode('utf-8')
+                if relation != '' and value != '':
+                    extracted_values.append(value)
+
+        parsed_relation, extracted_values = parse_info(relation, extracted_values)
+        relations[parsed_relation] = extracted_values
+
 
     if DEBUG:
         print("relations:")
@@ -153,6 +164,15 @@ def extract_query_answer(relations, query_relation):
         clean_query_relation = re.sub(r'[^a-zA-Z123456789\s]', "", query_relation.lower())
 
         relation_word_distance = levenshtein_distance(clean_relation, clean_query_relation)
+
+        if (clean_query_relation == 'capital'):
+            if ('capital' in clean_relation):
+                relation_word_distance = 0
+
+        if (clean_query_relation == 'largest city'):
+            if ('largest city' in clean_relation):
+                relation_word_distance = 0
+
         # print "distance {}<-->{} is {}".format(clean_query_relation, clean_relation, relation_word_distance)
         if relation_word_distance < min_word_distance:
             requested_relation_answers = relations[relation]
